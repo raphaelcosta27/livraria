@@ -1,218 +1,155 @@
-# Laravel Skeleton Template
+# Livraria — Projeto Técnico TJ-JUD
 
-<p align="center">
-    <a href="https://laravel.com" target="_blank">
-        <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
-    </a>
-</p>
+[Repositório no GitHub](https://github.com/raphaelcosta27/livraria.git)
 
-<h1 align="center">Laravel Skeleton Template</h1>
-<p align="center">
-    Projeto base pronto para novos sistemas com autenticação, validação de e-mail, integração Mailtrap, Livewire, PowerGrid e Breadcrumbs.<br>
-    Ideal para começar rápido, estudar ou usar em processos seletivos.<br>
-</p>
+## Índice
 
----
-
-## Recursos principais
-
-* Laravel + Breeze (Blade + Tailwind CSS)
-* Autenticação de usuários pronta
-* Validação de e-mail integrada (usuários precisam confirmar o e-mail antes de acessar áreas restritas)
-* Configuração pronta para envio de e-mails via Mailtrap
-* Livewire instalado (para componentes dinâmicos)
-* PowerGrid instalado (para tabelas avançadas e filtráveis)
-* Breadcrumbs instalado (para navegação hierárquica)
-* Pronto para testes automatizados com PHPUnit
-* Exemplos de configuração de qualidade de código (PHPStan, PHPCS)
-* Estrutura para CI/CD (GitHub Actions)
+* [Sobre o Projeto](#sobre-o-projeto)
+* [Tecnologias Utilizadas](#tecnologias-utilizadas)
+* [Como Executar](#como-executar)
+* [Funcionalidades](#funcionalidades)
+* [Modelagem de Dados](#modelagem-de-dados)
+* [Relatórios](#relatórios)
+* [Testes (TDD)](#testes-tdd)
+* [Boas Práticas e Diferenciais](#boas-práticas-e-diferenciais)
+* [Instalação e Scripts](#instalação-e-scripts)
+* [Considerações Finais](#considerações-finais)
 
 ---
 
-## ⚡️ Como rodar o projeto
+## Sobre o Projeto
 
-### 1. Clone o repositório
+Este projeto foi desenvolvido como parte do teste técnico do TJ-JUD, com o objetivo de demonstrar boas práticas em desenvolvimento Web, organização de código, persistência de dados e criação de relatórios.
 
-```bash
-git clone https://github.com/seu-usuario/laravel-skeleton.git
-cd laravel-skeleton
-```
-
-### 2. Instale as dependências
-
-```bash
-composer install
-npm install
-```
-
-### 3. Copie o arquivo de ambiente
-
-```bash
-cp .env.example .env
-```
-
-### 4. Gere a chave da aplicação
-
-```bash
-php artisan key:generate
-```
-
-### 5. Configure o banco de dados
-
-No arquivo `.env`, configure suas variáveis:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=laravel_skeleton
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-> Crie o banco de dados caso ainda não exista.
-
-### 6. Configure o Mailtrap para envio de e-mails
-
-Preencha estas variáveis no `.env` com **seus dados do Mailtrap**:
-
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=sandbox.smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=seu_usuario_mailtrap
-MAIL_PASSWORD=sua_senha_mailtrap
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=seu@email.com
-MAIL_FROM_NAME="Laravel Skeleton"
-```
-
-> Se ainda não tem conta, acesse: [https://mailtrap.io/](https://mailtrap.io/)
-
-### 7. Rode as migrations
-
-```bash
-php artisan migrate
-```
-
-### 8. Compile os assets front-end
-
-```bash
-npm run dev
-```
-
-> Para ambiente de produção, use: `npm run build`
-
-### 9. Rode o servidor de desenvolvimento
-
-```bash
-php artisan serve
-```
-
-> Acesse em [http://localhost:8000](http://localhost:8000)
+O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autores e assuntos, além da geração de relatórios agrupados por autor.
 
 ---
 
-## 🔌 Componentes Livewire e PowerGrid
+## Tecnologias Utilizadas
 
-Este template já está pronto para uso com Livewire e PowerGrid.
-
-* **Livewire**: Crie componentes dinâmicos sem sair do Blade.
-* **PowerGrid**: Crie tabelas dinâmicas, filtráveis e exportáveis com poucos comandos.
-
-### Criando um componente Livewire
-
-```bash
-php artisan make:livewire NomeDoComponente
-```
-
-### Criando uma tabela PowerGrid para um Model
-
-```bash
-php artisan powergrid:create
-```
-
-> Veja a [documentação do PowerGrid](https://livewire-powergrid.com/) para exemplos de uso e personalização de tabelas.
+* **Backend:** PHP (Laravel)
+* **Frontend:** Blade (Laravel), Bootstrap (CSS)
+* **Banco de Dados:** MySQL (pode ser adaptado)
+* **ORM/Persistência:** Eloquent (Laravel)
+* **Relatórios:** \[Informe qual componente foi utilizado, ex: Laravel Excel, DomPDF, etc.]
+* **Testes:** PHPUnit, Laravel Test (TDD — se implementado)
+* **Outros:** PowerGrid, Livewire (opcional)
 
 ---
 
-## 🧭 Breadcrumbs (Navegação)
+## Como Executar
 
-* O pacote [DaveJamesMiller/Laravel Breadcrumbs](https://github.com/davejamesmiller/laravel-breadcrumbs) já está instalado.
-* Crie seus breadcrumbs em `routes/breadcrumbs.php`, seguindo o exemplo:
+1. Clone este repositório:
 
-```php
-<?php
+   ```bash
+   git clone https://github.com/raphaelcosta27/livraria.git
+   cd livraria
+   ```
 
-use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
+2. Instale as dependências:
 
-Breadcrumbs::for('dashboard', function ($trail) {
-    $trail->push('Painel', route('dashboard'));
-});
-```
+   ```bash
+   composer install
+   npm install && npm run dev
+   ```
 
-* Para exibir, coloque em sua view/layout:
+3. Copie o arquivo `.env.example` para `.env`:
 
-```blade
-@if (Breadcrumbs::has())
-    <nav class="text-sm text-gray-500 py-2">
-        {{ Breadcrumbs::render() }}
-    </nav>
-@endif
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-* Personalize os nomes e a hierarquia conforme suas rotas e módulos.
+   Após copiar, **edite o arquivo `.env`** e ajuste todas as propriedades necessárias, principalmente:
 
----
+   * As configurações de acesso ao banco de dados (`DB_*`)
 
-## 📨 Confirmação de e-mail
+   * As informações de e-mail (`MAIL_*`).
 
-* Ao registrar um novo usuário, um e-mail de confirmação será enviado.
-* O usuário precisa clicar no link enviado para validar a conta antes de acessar áreas protegidas (ex: dashboard).
-* O sistema usa Mailtrap para simular o envio de e-mails em ambiente de desenvolvimento.
+   > **Atenção:** É fundamental configurar corretamente os dados de e-mail (MAIL\_MAILER, MAIL\_HOST, MAIL\_PORT, MAIL\_USERNAME, MAIL\_PASSWORD, etc). Sem isso, o usuário não conseguirá receber o e-mail de autenticação ao se registrar, e não poderá acessar o sistema após o cadastro.
 
----
+4. Gere a chave da aplicação:
 
-## 🧪 Rodando testes
+   ```bash
+   php artisan key:generate
+   ```
 
-```bash
-php artisan test
-# ou
-vendor/bin/phpunit
-```
+5. Execute as migrations e seeders:
 
----
+   ```bash
+   php artisan migrate --seed
+   ```
 
-## 🛠️ Ferramentas de qualidade (opcionais)
+6. (Opcional) Execute os testes:
 
-* PHPStan (`composer require --dev phpstan/phpstan`)
-* PHP\_CodeSniffer (`composer require --dev squizlabs/php_codesniffer`)
-* Exemplos de configuração em `phpstan.neon` e `phpcs.xml`.
+   ```bash
+   php artisan test
+   ```
 
----
+7. Inicie o servidor:
 
-## ⚙️ Dicas e observações
-
-* Configure `Schema::defaultStringLength(191);` no método `boot()` do arquivo `app/Providers/AppServiceProvider.php` para evitar erros em bancos MySQL antigos.
-* Nunca edite arquivos em `vendor/`.
-* Tradução para português já inclusa via [laravel-lang/lang](https://github.com/Laravel-Lang/lang).
-* Para gerar novas features, siga a estrutura dos controllers, models e rotas já presentes.
+   ```bash
+   php artisan serve
+   ```
 
 ---
 
-## 📚 Documentação
+## Funcionalidades
 
-* [Documentação oficial do Laravel](https://laravel.com/docs)
-* [Documentação do Breeze](https://laravel.com/docs/starter-kits#laravel-breeze)
-* [Mailtrap](https://mailtrap.io/)
-* [Livewire](https://laravel-livewire.com/docs/2.x/quickstart)
-* [PowerGrid](https://livewire-powergrid.com/)
-* [Laravel Breadcrumbs](https://github.com/davejamesmiller/laravel-breadcrumbs)
+* CRUD completo para **Livro**, **Autor** e **Assunto**
+* Tela inicial com navegação simples
+* Interface responsiva e estilizada com Bootstrap
+* Formatação de campos (datas, moeda, etc)
+* Validação e tratamento de erros específico (sem try/catch genérico)
+* Relatório agrupado por autor, gerado a partir de view no banco de dados
+* Testes automatizados (TDD, se implementado)
 
 ---
 
-## 📝 Licença
+## Modelagem de Dados
 
-Este projeto utiliza a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais informações.
+O projeto segue o seguinte modelo de dados:
+
+* **Livro** (id, título, data\_publicação, valor, etc)
+* **Autor** (id, nome, etc)
+* **Assunto** (id, descrição, etc)
+* Relacionamento: Livro pode ter mais de um Autor (N\:N), e pertence a um Assunto
+
+> Scripts de criação das tabelas, seeds e views estão disponíveis na pasta `/database`.
+
+---
+
+## Relatórios
+
+O relatório do sistema exibe os livros cadastrados agrupados por autor, com as principais informações dos livros e assuntos relacionados.
+A consulta do relatório é realizada a partir de uma **view no banco de dados**, conforme o desafio.
+
+---
+
+## Testes (TDD)
+
+O projeto possui testes automatizados cobrindo os principais fluxos de cadastro, edição, exclusão e geração de relatórios (se implementado).
+
+---
+
+## Boas Práticas e Diferenciais
+
+* Código limpo, com separação clara de camadas
+* Mensagens amigáveis para o usuário
+* Uso de Bootstrap para padronização visual
+* Utilização de view para relatórios
+* Testes automatizados (TDD)
+* Scripts de implantação/documentação incluídos
+
+---
+
+## Instalação e Scripts
+
+Todos os scripts de criação de tabelas, seeds, views e instruções de implantação estão disponíveis na pasta `/database` deste projeto.
+
+---
+
+## Considerações Finais
+
+O projeto será apresentado na entrevista técnica, com demonstração funcional das features e detalhamento técnico.
 
 ---
