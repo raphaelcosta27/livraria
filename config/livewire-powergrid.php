@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Js;
+use App\PowerGridThemes\PowerGridTheme;
 
 return [
 
@@ -13,7 +14,8 @@ return [
     | Configure here the theme of your choice.
     */
 
-    'theme' => \PowerComponents\LivewirePowerGrid\Themes\Tailwind::class,
+    'theme' => PowerGridTheme::class,
+    // 'theme' => \PowerComponents\LivewirePowerGrid\Themes\Tailwind::class,
     // 'theme' => \PowerComponents\LivewirePowerGrid\Themes\DaisyUI::class,
     // 'theme' => \PowerComponents\LivewirePowerGrid\Themes\Bootstrap5::class,
 
@@ -22,12 +24,12 @@ return [
     'icon_resources' => [
         'paths' => [
             // 'default' => 'resources/views/components/icons',
-            // 'outline' => 'vendor/wireui/wireui/resources/views/components/icons/outline',
-            // 'solid'   => 'vendor/wireui/wireui/resources/views/components/icons/solid',
+            'outline' => 'resources/views/vendor/wireui/heroicons/components/outline/',
+            // 'solid'   => 'resources/views/vendor/wireui/heroicons/components/solid/',
         ],
 
         'allowed' => [
-            // 'pencil',
+            'pencil',
         ],
 
         'attributes' => ['class' => 'w-5 text-red-600'],
@@ -48,7 +50,7 @@ return [
          */
         'flatpickr' => [
             'locales' => [
-                'pt_BR' => [
+                'pt' => [
                     'locale'     => 'pt',
                     'dateFormat' => 'd/m/Y H:i',
                     'enableTime' => true,
@@ -96,7 +98,7 @@ return [
     |
     */
 
-    'filter' => 'outside',
+    'filter' => 'inline',
 
     /*
     |--------------------------------------------------------------------------
