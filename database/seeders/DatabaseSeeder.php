@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-// use App\Models\User;
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AutorSeeder;
 use Database\Seeders\AssuntoSeeder;
 use Database\Seeders\LivrosSeeder;
+use App\Models\User; // Certifique-se que o model User está neste namespace
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,11 +21,13 @@ class DatabaseSeeder extends Seeder
             AssuntoSeeder::class,
             LivrosSeeder::class
         ]);
-        
-        // User::factory(10)->create();
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+
+        // Criação do usuário Raphael Costa
+        User::create([
+            'name' => 'Administrador',
+            'email' => 'admin@admin.com.br',
+            'password' => Hash::make('teste@123'),
+            'email_verified_at' => now(), // Marca o e-mail como verificado
+        ]);
     }
 }
