@@ -26,8 +26,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Autores
     Route::resource('autores', AutorController::class);
 
-    //Autores
+    //Livros
     Route::resource('livros', LivroController::class);
+
+    Route::get('/relatorios/livros-autores', function () {
+        return view('livraria.relatorios.view-livros-autores');
+    })->name('relatorios.livros-autores');
 });
 
 require __DIR__.'/auth.php';
