@@ -11,37 +11,38 @@ class AssuntoCrudTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $user;
+    protected User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // Crie um usuário e já verifique o e-mail, caso o sistema exija verificação para autenticar!
+
         $this->user = User::factory()->create([
             'email_verified_at' => now(),
         ]);
     }
 
-    public function test_usuario_autenticado_pode_ver_a_listagem_de_assuntos()
+    public function test_usuario_autenticado_pode_ver_a_listagem_de_assuntos(): void
     {
         Assunto::factory()->create(['descricao' => 'Teste de Listagem']);
+
         $response = $this->actingAs($this->user)
             ->get(route('assuntos.index'));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Teste de Listagem');
     }
 
-    public function test_usuario_autenticado_pode_acessar_tela_de_criacao_de_assunto()
+    public function test_usuario_autenticado_pode_acessar_tela_de_criacao_de_assunto(): void
     {
         $response = $this->actingAs($this->user)
             ->get(route('assuntos.create'));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Novo Assunto');
     }
 
-    public function test_usuario_pode_criar_um_novo_assunto()
+    public function test_usuario_pode_criar_um_novo_assunto(): void
     {
         $dados = ['descricao' => 'Assunto Novo'];
 
@@ -52,7 +53,7 @@ class AssuntoCrudTest extends TestCase
         $this->assertDatabaseHas('assuntos', $dados);
     }
 
-    public function test_valida_campo_obrigatorio_na_criacao()
+    public function test_valida_campo_obrigatorio_na_criacao(): void
     {
         $response = $this->actingAs($this->user)
             ->post(route('assuntos.store'), []);
@@ -60,17 +61,18 @@ class AssuntoCrudTest extends TestCase
         $response->assertSessionHasErrors(['descricao']);
     }
 
-    public function test_usuario_pode_acessar_tela_de_edicao_de_assunto()
+    public function test_usuario_pode_acessar_tela_de_edicao_de_assunto(): void
     {
         $assunto = Assunto::factory()->create();
+
         $response = $this->actingAs($this->user)
             ->get(route('assuntos.edit', $assunto));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Editar Assunto');
     }
 
-    public function test_usuario_pode_atualizar_um_assunto()
+    public function test_usuario_pode_atualizar_um_assunto(): void
     {
         $assunto = Assunto::factory()->create(['descricao' => 'Original']);
         $dados = ['descricao' => 'Atualizado'];
@@ -83,9 +85,10 @@ class AssuntoCrudTest extends TestCase
         $this->assertDatabaseMissing('assuntos', ['descricao' => 'Original']);
     }
 
-    public function test_usuario_pode_excluir_um_assunto()
+    public function test_usuario_pode_excluir_um_assunto(): void
     {
         $assunto = Assunto::factory()->create();
+
         $response = $this->actingAs($this->user)
             ->delete(route('assuntos.destroy', $assunto));
 
@@ -93,7 +96,7 @@ class AssuntoCrudTest extends TestCase
         $this->assertDatabaseMissing('assuntos', ['id' => $assunto->id]);
     }
 
-    public function test_nao_permite_inserir_descricao_com_tipo_incorreto_array()
+    public function test_nao_permite_inserir_descricao_com_tipo_incorreto_array(): void
     {
         $dados = ['descricao' => ['array', 'de', 'strings']];
 
@@ -103,7 +106,7 @@ class AssuntoCrudTest extends TestCase
         $response->assertSessionHasErrors(['descricao']);
     }
 
-    public function test_nao_permite_inserir_descricao_com_tipo_incorreto_inteiro()
+    public function test_nao_permite_inserir_descricao_com_tipo_incorreto_inteiro(): void
     {
         $dados = ['descricao' => 123456];
 
@@ -113,9 +116,9 @@ class AssuntoCrudTest extends TestCase
         $response->assertSessionHasErrors(['descricao']);
     }
 
-    public function test_nao_permite_inserir_descricao_com_string_muito_longa()
+    public function test_nao_permite_inserir_descricao_com_string_muito_longa(): void
     {
-        $dados = ['descricao' => str_repeat('A', 256)]; // Limite é 255
+        $dados = ['descricao' => str_repeat('A', 256)];
 
         $response = $this->actingAs($this->user)
             ->post(route('assuntos.store'), $dados);
@@ -123,7 +126,7 @@ class AssuntoCrudTest extends TestCase
         $response->assertSessionHasErrors(['descricao']);
     }
 
-    public function test_nao_permite_inserir_descricao_nula()
+    public function test_nao_permite_inserir_descricao_nula(): void
     {
         $dados = ['descricao' => null];
 
@@ -133,19 +136,15 @@ class AssuntoCrudTest extends TestCase
         $response->assertSessionHasErrors(['descricao']);
     }
 
-    public function test_nao_permite_inserir_html_script_em_descricao()
+    public function test_nao_permite_inserir_html_script_em_descricao(): void
     {
         $dados = ['descricao' => '<script>alert("xss")</script>'];
 
         $response = $this->actingAs($this->user)
             ->post(route('assuntos.store'), $dados);
 
-        // Depende da sua validação/sanitização, se não bloquear, o teste vai falhar.
-        // Se quiser garantir, pode usar:
+        // Ajuste conforme sua política: permitir, sanitizar ou rejeitar
         $response->assertSessionDoesntHaveErrors(['descricao']);
-        $this->assertDatabaseHas('assuntos', [
-            'descricao' => '<script>alert("xss")</script>'
-        ]);
-        // Ou ajuste o teste conforme sua política de segurança
+        $this->assertDatabaseHas('assuntos', $dados);
     }
 }

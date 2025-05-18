@@ -11,37 +11,38 @@ class AutorCrudTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $user;
+    protected User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // Crie um usuário e já verifique o e-mail, caso o sistema exija verificação para autenticar!
+
         $this->user = User::factory()->create([
             'email_verified_at' => now(),
         ]);
     }
 
-    public function test_usuario_autenticado_pode_ver_a_listagem_de_autores()
+    public function test_usuario_autenticado_pode_ver_a_listagem_de_autores(): void
     {
         Autor::factory()->create(['nome' => 'Teste de Listagem']);
+
         $response = $this->actingAs($this->user)
             ->get(route('autores.index'));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Teste de Listagem');
     }
 
-    public function test_usuario_autenticado_pode_acessar_tela_de_criacao_de_autor()
+    public function test_usuario_autenticado_pode_acessar_tela_de_criacao_de_autor(): void
     {
         $response = $this->actingAs($this->user)
             ->get(route('autores.create'));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Novo Autor');
     }
 
-    public function test_usuario_pode_criar_um_novo_autor()
+    public function test_usuario_pode_criar_um_novo_autor(): void
     {
         $dados = ['nome' => 'Autor Novo'];
 
@@ -52,7 +53,7 @@ class AutorCrudTest extends TestCase
         $this->assertDatabaseHas('autores', $dados);
     }
 
-    public function test_valida_campo_obrigatorio_na_criacao()
+    public function test_valida_campo_obrigatorio_na_criacao(): void
     {
         $response = $this->actingAs($this->user)
             ->post(route('autores.store'), []);
@@ -60,17 +61,18 @@ class AutorCrudTest extends TestCase
         $response->assertSessionHasErrors(['nome']);
     }
 
-    public function test_usuario_pode_acessar_tela_de_edicao_de_autor()
+    public function test_usuario_pode_acessar_tela_de_edicao_de_autor(): void
     {
         $autor = Autor::factory()->create();
+
         $response = $this->actingAs($this->user)
             ->get(route('autores.edit', $autor));
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('Editar Autor');
     }
 
-    public function test_usuario_pode_atualizar_um_autor()
+    public function test_usuario_pode_atualizar_um_autor(): void
     {
         $autor = Autor::factory()->create(['nome' => 'Original']);
         $dados = ['nome' => 'Atualizado'];
@@ -83,18 +85,21 @@ class AutorCrudTest extends TestCase
         $this->assertDatabaseMissing('autores', ['nome' => 'Original']);
     }
 
-    public function test_usuario_pode_excluir_um_autor()
+    public function test_usuario_pode_excluir_um_autor(): void
     {
         $autor = Autor::factory()->create();
+
+        // Garante que o autor não possui livros associados
+        $autor->livros()->detach();
+
         $response = $this->actingAs($this->user)
             ->delete(route('autores.destroy', $autor));
 
-        // Se usa AJAX pode ser assertStatus(200), mas se usa redirect padrão:
         $response->assertRedirect(route('autores.index'));
         $this->assertDatabaseMissing('autores', ['id' => $autor->id]);
     }
 
-    public function test_nao_permite_inserir_nome_com_tipo_incorreto_array()
+    public function test_nao_permite_inserir_nome_com_tipo_incorreto_array(): void
     {
         $dados = ['nome' => ['array', 'de', 'strings']];
 
@@ -104,7 +109,7 @@ class AutorCrudTest extends TestCase
         $response->assertSessionHasErrors(['nome']);
     }
 
-    public function test_nao_permite_inserir_nome_com_tipo_incorreto_inteiro()
+    public function test_nao_permite_inserir_nome_com_tipo_incorreto_inteiro(): void
     {
         $dados = ['nome' => 123456];
 
@@ -114,9 +119,9 @@ class AutorCrudTest extends TestCase
         $response->assertSessionHasErrors(['nome']);
     }
 
-    public function test_nao_permite_inserir_nome_com_string_muito_longa()
+    public function test_nao_permite_inserir_nome_com_string_muito_longa(): void
     {
-        $dados = ['nome' => str_repeat('A', 256)]; // Limite é 255
+        $dados = ['nome' => str_repeat('A', 256)];
 
         $response = $this->actingAs($this->user)
             ->post(route('autores.store'), $dados);
@@ -124,7 +129,7 @@ class AutorCrudTest extends TestCase
         $response->assertSessionHasErrors(['nome']);
     }
 
-    public function test_nao_permite_inserir_nome_nulo()
+    public function test_nao_permite_inserir_nome_nulo(): void
     {
         $dados = ['nome' => null];
 
@@ -134,19 +139,15 @@ class AutorCrudTest extends TestCase
         $response->assertSessionHasErrors(['nome']);
     }
 
-    public function test_nao_permite_inserir_html_script_em_nome()
+    public function test_nao_permite_inserir_html_script_em_nome(): void
     {
         $dados = ['nome' => '<script>alert("xss")</script>'];
 
         $response = $this->actingAs($this->user)
             ->post(route('autores.store'), $dados);
 
-        // Depende da sua validação/sanitização, se não bloquear, o teste vai falhar.
-        // Se quiser garantir, pode usar:
+        // Altere este comportamento conforme política do sistema (ex: sanitizar ou bloquear)
         $response->assertSessionDoesntHaveErrors(['nome']);
-        $this->assertDatabaseHas('autores', [
-            'nome' => '<script>alert("xss")</script>'
-        ]);
-        // Ou ajuste o teste conforme sua política de segurança
+        $this->assertDatabaseHas('autores', $dados);
     }
 }

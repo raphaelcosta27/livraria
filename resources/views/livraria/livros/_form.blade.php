@@ -72,8 +72,13 @@
         <small>Segure CTRL para selecionar vários</small>
     </div>
 
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        {{ $isEdit ? 'Salvar Alterações' : 'Salvar' }}
+    <div class="flex items-center justify-between">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            {{ $isEdit ? 'Atualizar' : 'Salvar' }}
+        </button>
+        <a href="{{ route('livros.index') }}" class="text-gray-500 hover:underline">Cancelar</a>
+    </div>
+        
     </button>
 </form>
 

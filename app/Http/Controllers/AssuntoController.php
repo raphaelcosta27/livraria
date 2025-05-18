@@ -1,57 +1,98 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
 use App\Models\Assunto;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class AssuntoController extends Controller
 {
-    public function index()
+    /**
+     * Exibe a listagem de assuntos.
+     *
+     * @return View
+     */
+    public function index(): View
     {
-        $assuntos = Assunto::orderBy('id', 'desc')->paginate(10);
+        $assuntos = Assunto::orderByDesc('id')->paginate(10);
+
         return view('livraria.assuntos.index', compact('assuntos'));
     }
 
-    public function create()
+    /**
+     * Exibe o formulário de criação de um novo assunto.
+     *
+     * @return View
+     */
+    public function create(): View
     {
         return view('livraria.assuntos.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Armazena um novo assunto no banco de dados.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
+     */
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'descricao' => 'required|string|max:255'
+        $validated = $request->validate([
+            'descricao' => 'required|string|max:255',
         ]);
 
-        Assunto::create($request->only('descricao'));
+        Assunto::create($validated);
 
-        return redirect()->route('assuntos.index')
+        return redirect()
+            ->route('assuntos.index')
             ->with('success', 'Assunto criado com sucesso!');
     }
 
-    public function edit(Assunto $assunto)
+    /**
+     * Exibe o formulário de edição de um assunto existente.
+     *
+     * @param  Assunto  $assunto
+     * @return View
+     */
+    public function edit(Assunto $assunto): View
     {
         return view('livraria.assuntos.edit', compact('assunto'));
     }
 
-    public function update(Request $request, Assunto $assunto)
+    /**
+     * Atualiza um assunto existente no banco de dados.
+     *
+     * @param  Request  $request
+     * @param  Assunto  $assunto
+     * @return RedirectResponse
+     */
+    public function update(Request $request, Assunto $assunto): RedirectResponse
     {
-        $request->validate([
-            'descricao' => 'required|string|max:255'
+        $validated = $request->validate([
+            'descricao' => 'required|string|max:255',
         ]);
 
-        $assunto->update($request->only('descricao'));
+        $assunto->update($validated);
 
-        return redirect()->route('assuntos.index')
+        return redirect()
+            ->route('assuntos.index')
             ->with('success', 'Assunto atualizado com sucesso!');
     }
 
-    public function destroy(Assunto $assunto)
+    /**
+     * Remove um assunto do banco de dados.
+     *
+     * @param  Assunto  $assunto
+     * @return RedirectResponse
+     */
+    public function destroy(Assunto $assunto): RedirectResponse
     {
         $assunto->delete();
 
-        return redirect()->route('assuntos.index')
+        return redirect()
+            ->route('assuntos.index')
             ->with('success', 'Assunto removido com sucesso!');
     }
 }

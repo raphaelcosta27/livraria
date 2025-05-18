@@ -72,7 +72,7 @@ final class AutoresTable extends PowerGridComponent
                     </svg>
                     Editar
                 ')
-                ->route('autores.edit', ['autore' => $row->id])
+                ->route('autores.edit', ['autor' => $row->id])
                 ->class('text-yellow-700 hover:text-yellow-900 hover:bg-yellow-50 rounded px-2 py-1'),
 
             Button::add('delete')

@@ -55,5 +55,6 @@
     </footer>
     @stack('scripts')
     @livewireScripts
+    @yield('scripts')
 </body>
 </html>

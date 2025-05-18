@@ -4,60 +4,84 @@ namespace App\Http\Controllers;
 
 use App\Models\Autor;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class AutorController extends Controller
 {
-    public function index()
+    /**
+     * Exibe a listagem de autores.
+     */
+    public function index(): View
     {
-        $autores = Autor::paginate(10);
+        $autores = Autor::orderByDesc('id')->paginate(10);
+
         return view('livraria.autores.index', compact('autores'));
     }
 
-    public function create()
+    /**
+     * Exibe o formulário de criação de um novo autor.
+     */
+    public function create(): View
     {
         return view('livraria.autores.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Armazena um novo autor no banco de dados.
+     */
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
+        $validated = $request->validate([
+            'nome' => ['required', 'string', 'max:255'],
         ]);
 
-        Autor::create($request->all());
+        Autor::create($validated);
 
-        return redirect()->route('autores.index')->with('success', 'Autor criado com sucesso!');
+        return redirect()
+            ->route('autores.index')
+            ->with('success', 'Autor criado com sucesso!');
     }
 
-    public function edit(Autor $autore)
+    /**
+     * Exibe o formulário de edição de um autor existente.
+     */
+    public function edit(Autor $autor): View
     {
-        return view('livraria.autores.edit', compact('autore'));
+        return view('livraria.autores.edit', compact('autor'));
     }
 
-    public function update(Request $request, Autor $autore)
+    /**
+     * Atualiza os dados de um autor no banco de dados.
+     */
+    public function update(Request $request, Autor $autor): RedirectResponse
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
+        $validated = $request->validate([
+            'nome' => ['required', 'string', 'max:255'],
         ]);
 
-        $autore->update([
-            'nome' => $request->input('nome'),
-        ]);
+        $autor->update($validated);
 
-        return redirect()->route('autores.index')->with('success', 'Autor atualizado com sucesso!');
+        return redirect()
+            ->route('autores.index')
+            ->with('success', 'Autor atualizado com sucesso!');
     }
 
-    public function destroy(Autor $autore)
+    /**
+     * Remove um autor do banco de dados, caso não esteja vinculado a livros.
+     */
+    public function destroy(Autor $autor): RedirectResponse
     {
-        if ($autore->livros()->count() > 0) {
-            return redirect()->route('autores.index')
+        if ($autor->livros()->exists()) {
+            return redirect()
+                ->route('autores.index')
                 ->with('error', 'Este autor não pode ser excluído, pois está vinculado a um ou mais livros.');
         }
 
-        $autore->delete();
+        $autor->delete();
 
-        return redirect()->route('autores.index')
+        return redirect()
+            ->route('autores.index')
             ->with('success', 'Autor removido com sucesso!');
     }
-
 }

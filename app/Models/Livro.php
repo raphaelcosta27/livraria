@@ -4,14 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Livro extends Model
 {
     use HasFactory;
 
+    /**
+     * A tabela associada ao modelo.
+     *
+     * @var string
+     */
     protected $table = 'livros';
 
-    // Permite o preenchimento em massa dos campos abaixo
+    /**
+     * Os atributos que podem ser preenchidos em massa.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'titulo',
         'editora',
@@ -21,19 +31,21 @@ class Livro extends Model
     ];
 
     /**
-     * Relacionamento N:N com Autor.
-     * Um livro pode ter vários autores.
+     * Relacionamento muitos-para-muitos com autores.
+     *
+     * @return BelongsToMany
      */
-    public function autores()
+    public function autores(): BelongsToMany
     {
         return $this->belongsToMany(Autor::class, 'livro_autor', 'livro_id', 'autor_id');
     }
 
     /**
-     * Relacionamento N:N com Assunto.
-     * Um livro pode ter vários assuntos.
+     * Relacionamento muitos-para-muitos com assuntos.
+     *
+     * @return BelongsToMany
      */
-    public function assuntos()
+    public function assuntos(): BelongsToMany
     {
         return $this->belongsToMany(Assunto::class, 'livro_assunto', 'livro_id', 'assunto_id');
     }
