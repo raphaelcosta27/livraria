@@ -1,3 +1,5 @@
+<x-flash-message type="error" :message="session('error')" />
+
 <form 
     action="{{ isset($autor) ? route('autores.update', $autor) : route('autores.store') }}" 
     method="POST"

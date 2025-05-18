@@ -4,6 +4,8 @@
     $isEdit = isset($livro);
 @endphp
 
+<x-flash-message type="error" :message="session('error')" />
+
 <form method="POST" action="{{ $isEdit ? route('livros.update', $livro->id) : route('livros.store') }}">
     @csrf
     @if($isEdit)
@@ -96,7 +98,7 @@ $(function() {
         let valor = $(this).val();
         let ano = parseInt(valor, 10);
         let anoMin = 1500;
-        let anoMax = {{ date('Y') - 1 }};
+        let anoMax = {{ date('Y') }};
 
         if (valor.length > 0 && (isNaN(ano) || valor.match(/\D/))) {
             this.setCustomValidity('Digite apenas números para o ano.');

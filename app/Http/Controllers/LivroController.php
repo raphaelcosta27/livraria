@@ -38,7 +38,7 @@ class LivroController extends Controller
             'titulo'          => 'required|string|max:40',
             'editora'         => 'required|string|max:40',
             'edicao'          => 'required|integer|min:1',
-            'ano_publicacao'  => 'required|digits:4|integer|between:1500,' . (date('Y')-1),
+            'ano_publicacao'  => 'required|digits:4|integer|between:1500,' . (date('Y')),
             'valor'           => ['required', 'regex:/^\d{1,3}(\.\d{3})*,\d{2}$/'],
             'autores'         => 'required|array|min:1',
             'assuntos'        => 'required|array|min:1',

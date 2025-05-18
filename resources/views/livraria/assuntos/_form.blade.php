@@ -1,3 +1,5 @@
+<x-flash-message type="error" :message="session('error')" />
+
 <form 
     action="{{ isset($assunto) ? route('assuntos.update', $assunto) : route('assuntos.store') }}" 
     method="POST"
