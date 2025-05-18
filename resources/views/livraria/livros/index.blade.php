@@ -10,6 +10,8 @@
 
         @if(session('success'))
             <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ session('success') }}</div>
+        @elseif(session('error'))
+            <div class="mb-4 p-3 bg-red-200 text-red-800 rounded">{{ session('error') }}</div>  
         @endif
 
         <div class="bg-white shadow-md rounded-lg p-6">

@@ -10,6 +10,8 @@
 
         @if(session('success'))
             <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">{{ session('success') }}</div>
+        @elseif(session('error'))
+            <div class="mb-4 p-3 bg-red-200 text-red-800 rounded">{{ session('error') }}</div>
         @endif
 
         <div class="bg-white shadow-md rounded-lg p-6">
@@ -28,29 +30,13 @@
 {{-- ... layout e conteúdo igual ao seu ... --}}
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script>
-function confirmarExclusaoAutor(id, nome) {
-    if(confirm('Tem certeza que deseja excluir o autor "' + nome + '"? Esta ação não poderá ser desfeita.')) {
-        $.ajax({
-            url: "{{ url('autores') }}/" + id,
-            type: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                alert(response.message || 'Autor excluído com sucesso!');
-                Livewire.emit('pg:eventRefresh-autores-table');
-            },
-            error: function(xhr) {
-                let mensagem = 'Erro ao excluir autor.';
-                if(xhr.responseJSON && xhr.responseJSON.message) {
-                    mensagem = xhr.responseJSON.message;
-                }
-                alert(mensagem);
+    <script>
+        function enviarFormularioExclusaoAutor(id, nome) {
+            if (confirm('Tem certeza que deseja excluir o autor "' + nome + '"? Esta ação não poderá ser desfeita.')) {
+                var form = document.getElementById('form-excluir-autor');
+                form.action = "{{ url('autores') }}/" + id;
+                form.submit();
             }
-        });
-    }
-}
-</script>
+        }
+    </script>
 @endpush

@@ -84,9 +84,9 @@ final class AutoresTable extends PowerGridComponent
                 ')
                 ->class('text-red-700 hover:text-red-900 hover:bg-red-50 rounded px-2 py-1')
                 ->attributes([
-                    'onclick' => "confirmarExclusaoAutor('{$row->id}', '".htmlspecialchars(addslashes($row->nome))."'); return false;",
+                    'onclick' => "enviarFormularioExclusaoAutor('{$row->id}', '".htmlspecialchars(addslashes($row->nome))."'); return false;",
                     'title' => 'Excluir',
-                ]),
+                ]), 
         ];
     }
 
