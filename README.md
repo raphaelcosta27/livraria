@@ -1,23 +1,34 @@
-# Livraria — Projeto Técnico TJ-JUD
+# Livraria — Projeto Técnico TJ-JUD 📚✨
 
 [Repositório no GitHub](https://github.com/raphaelcosta27/livraria.git)
+
+## Requisitos Mínimos
+
+* **PHP:** 8.2 ou superior
+* **MySQL:** 8.0 ou superior
+* **Composer:** Gerenciador de dependências PHP ([veja como instalar](https://getcomposer.org/))
+* **NPM:** Gerenciador de pacotes do Node.js ([veja como instalar](https://nodejs.org/en/download))
+
+> O Composer é utilizado para instalar e gerenciar dependências do backend (Laravel). O NPM é utilizado para instalar e compilar dependências de frontend (como Tailwind CSS, Livewire, etc).
+
+Se você não possui um ambiente configurado, poderá utilizar um ambiente Docker completo através de um repositório complementar (link será disponibilizado em breve).
+
+---
 
 ## Índice
 
 * [Sobre o Projeto](#sobre-o-projeto)
 * [Tecnologias Utilizadas](#tecnologias-utilizadas)
 * [Como Executar](#como-executar)
-* [Funcionalidades](#funcionalidades)
-* [Modelagem de Dados](#modelagem-de-dados)
 * [Relatórios](#relatórios)
 * [Testes (TDD)](#testes-tdd)
-* [Boas Práticas e Diferenciais](#boas-práticas-e-diferenciais)
-* [Instalação e Scripts](#instalação-e-scripts)
-* [Considerações Finais](#considerações-finais)
+* [Boas Práticas e Diferenciais](#boas-praticas-e-diferenciais)
+* [Instalação e Scripts](#instalacao-e-scripts)
+* [Considerações Finais](#consideracoes-finais)
 
 ---
 
-## Sobre o Projeto
+## Sobre o Projeto 🚀
 
 Este projeto foi desenvolvido como parte do teste técnico do TJ-JUD, com o objetivo de demonstrar boas práticas em desenvolvimento Web, organização de código, persistência de dados e criação de relatórios.
 
@@ -25,10 +36,10 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
 
 ---
 
-## Tecnologias Utilizadas
+## Tecnologias Utilizadas 🛠️
 
 * **Backend:** PHP (Laravel)
-* **Frontend:** Blade (Laravel), Bootstrap (CSS)
+* **Frontend:** Blade (Laravel), Tailwind CSS
 * **Banco de Dados:** MySQL (pode ser adaptado)
 * **ORM/Persistência:** Eloquent (Laravel)
 * **Relatórios:** \[Informe qual componente foi utilizado, ex: Laravel Excel, DomPDF, etc.]
@@ -37,7 +48,7 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
 
 ---
 
-## Como Executar
+## Como Executar 🏁
 
 1. Clone este repositório:
 
@@ -50,7 +61,7 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
 
    ```bash
    composer install
-   npm install && npm run dev
+   npm install && npm run build
    ```
 
 3. Copie o arquivo `.env.example` para `.env`:
@@ -59,7 +70,7 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
    cp .env.example .env
    ```
 
-   Após copiar, **edite o arquivo `.env`** e ajuste todas as propriedades necessárias, principalmente:
+   Após copiar, \*\*edite o arquivo \*\*\`\` e ajuste todas as propriedades necessárias, principalmente:
 
    * As configurações de acesso ao banco de dados (`DB_*`)
 
@@ -79,6 +90,15 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
    php artisan migrate --seed
    ```
 
+   Após rodar as migrations, você pode popular o banco de dados com alguns registros fictícios para testes utilizando o comando acima (`php artisan db:seed`).
+
+   Esse comando irá criar automaticamente um usuário de teste:
+
+   * **E-mail:** [admin@admin.com.br](mailto:admin@admin.com.br)
+   * **Senha:** teste\@123
+
+   Utilize essas credenciais para acessar o sistema e explorar as funcionalidades.
+
 6. (Opcional) Execute os testes:
 
    ```bash
@@ -93,62 +113,28 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
 
 ---
 
-## Funcionalidades
+## Relatórios 📊
 
-* CRUD completo para **Livro**, **Autor** e **Assunto**
-* Tela inicial com navegação simples
-* Interface responsiva e estilizada com Bootstrap
-* Formatação de campos (datas, moeda, etc)
-* Validação e tratamento de erros específico (sem try/catch genérico)
-* Relatório agrupado por autor, gerado a partir de view no banco de dados
-* Testes automatizados (TDD, se implementado)
+Os relatórios do sistema são gerados utilizando o **PowerGrid** com exportação direta para Excel.
+
+Os relatórios agrupam os livros por autor, mostrando as principais informações de livros e assuntos relacionados.
+
+A consulta dos relatórios é baseada em uma **view do banco de dados**, conforme solicitado no desafio.
 
 ---
 
-## Modelagem de Dados
-
-O projeto segue o seguinte modelo de dados:
-
-* **Livro** (id, título, data\_publicação, valor, etc)
-* **Autor** (id, nome, etc)
-* **Assunto** (id, descrição, etc)
-* Relacionamento: Livro pode ter mais de um Autor (N\:N), e pertence a um Assunto
-
-> Scripts de criação das tabelas, seeds e views estão disponíveis na pasta `/database`.
-
----
-
-## Relatórios
-
-O relatório do sistema exibe os livros cadastrados agrupados por autor, com as principais informações dos livros e assuntos relacionados.
-A consulta do relatório é realizada a partir de uma **view no banco de dados**, conforme o desafio.
-
----
-
-## Testes (TDD)
-
-O projeto possui testes automatizados cobrindo os principais fluxos de cadastro, edição, exclusão e geração de relatórios (se implementado).
-
----
-
-## Boas Práticas e Diferenciais
+## Boas Práticas e Diferenciais 💡
 
 * Código limpo, com separação clara de camadas
 * Mensagens amigáveis para o usuário
-* Uso de Bootstrap para padronização visual
+* Uso de Tailwind CSS para padronização visual
 * Utilização de view para relatórios
 * Testes automatizados (TDD)
 * Scripts de implantação/documentação incluídos
 
 ---
 
-## Instalação e Scripts
-
-Todos os scripts de criação de tabelas, seeds, views e instruções de implantação estão disponíveis na pasta `/database` deste projeto.
-
----
-
-## Considerações Finais
+## Considerações Finais 🤝
 
 O projeto será apresentado na entrevista técnica, com demonstração funcional das features e detalhamento técnico.
 
