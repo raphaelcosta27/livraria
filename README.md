@@ -11,7 +11,7 @@
 
 > O Composer é utilizado para instalar e gerenciar dependências do backend (Laravel). O NPM é utilizado para instalar e compilar dependências de frontend (como Tailwind CSS, Livewire, etc).
 
-Se você não possui um ambiente configurado, poderá utilizar um ambiente Docker completo através de um repositório complementar (link será disponibilizado em breve).
+Se você não possui um ambiente configurado, poderá utilizar um ambiente Docker completo através deste repositório: [ambiente-docker](https://github.com/raphaelcosta27/ambiente-docker.git) 🚢.
 
 ---
 
@@ -61,7 +61,7 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
 
    ```bash
    composer install
-   npm install && npm run build
+   npm install && npm run dev
    ```
 
 3. Copie o arquivo `.env.example` para `.env`:
