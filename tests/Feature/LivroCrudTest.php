@@ -262,4 +262,117 @@ class LivroCrudTest extends TestCase
             'titulo', 'editora', 'edicao', 'ano_publicacao', 'valor', 'autores', 'assuntos',
         ]);
     }
+
+    // ---- TESTES DE SEGURANÇA ----
+
+    public function test_nao_permite_sql_injection_no_titulo(): void
+    {
+        $dados = [
+            'titulo'         => "Teste'); DROP TABLE livros; --",
+            'editora'        => 'Editora Segura',
+            'edicao'         => 1,
+            'ano_publicacao' => '2020',
+            'valor'          => '20,00',
+            'autores'        => $this->autores->pluck('id')->toArray(),
+            'assuntos'       => $this->assuntos->pluck('id')->toArray(),
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('livros.store'), $dados);
+
+        $response->assertRedirect(route('livros.index'));
+        $this->assertDatabaseHas('livros', [
+            'titulo' => "Teste'); DROP TABLE livros; --"
+        ]);
+    }
+
+    public function test_nao_permite_xss_em_titulo(): void
+    {
+        $tituloMalicioso = '<script>alert("xss")</script>';
+        $dados = [
+            'titulo'         => $tituloMalicioso,
+            'editora'        => 'Editora XSS',
+            'edicao'         => 1,
+            'ano_publicacao' => '2020',
+            'valor'          => '12,00',
+            'autores'        => $this->autores->pluck('id')->toArray(),
+            'assuntos'       => $this->assuntos->pluck('id')->toArray(),
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('livros.store'), $dados);
+
+        $response->assertRedirect(route('livros.index'));
+        $this->assertDatabaseHas('livros', ['titulo' => $tituloMalicioso]);
+    }
+
+    public function test_nao_permite_mass_assignment_em_campos_nao_fillable(): void
+    {
+        $dados = [
+            'id'             => 999,
+            'titulo'         => 'Mass Assignment',
+            'editora'        => 'Editora Segura',
+            'edicao'         => 1,
+            'ano_publicacao' => '2020',
+            'valor'          => '18,00',
+            'autores'        => $this->autores->pluck('id')->toArray(),
+            'assuntos'       => $this->assuntos->pluck('id')->toArray(),
+            'criado_por'     => 777, // Campo não fillable
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('livros.store'), $dados);
+
+        $response->assertRedirect(route('livros.index'));
+        $this->assertDatabaseHas('livros', [
+            'titulo' => 'Mass Assignment',
+        ]);
+        $this->assertDatabaseMissing('livros', ['id' => 999]);
+    }
+
+    public function test_nao_permite_sobrescrever_timestamps(): void
+    {
+        $dados = [
+            'titulo'         => 'Timestamps',
+            'editora'        => 'Editora',
+            'edicao'         => 1,
+            'ano_publicacao' => '2020',
+            'valor'          => '10,00',
+            'autores'        => $this->autores->pluck('id')->toArray(),
+            'assuntos'       => $this->assuntos->pluck('id')->toArray(),
+            'created_at'     => now()->addYear(),
+            'updated_at'     => now()->addYear(),
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('livros.store'), $dados);
+
+        $response->assertRedirect(route('livros.index'));
+        $this->assertDatabaseHas('livros', [
+            'titulo' => 'Timestamps',
+        ]);
+        $this->assertDatabaseMissing('livros', [
+            'created_at' => now()->addYear()->toDateTimeString()
+        ]);
+    }
+
+    public function test_guest_nao_pode_criar_ou_excluir_livro(): void
+    {
+        $dados = [
+            'titulo'         => 'Guest',
+            'editora'        => 'Editora',
+            'edicao'         => 1,
+            'ano_publicacao' => '2020',
+            'valor'          => '10,00',
+            'autores'        => $this->autores->pluck('id')->toArray(),
+            'assuntos'       => $this->assuntos->pluck('id')->toArray(),
+        ];
+
+        $response = $this->post(route('livros.store'), $dados);
+        $response->assertRedirect(route('login'));
+
+        $livro = Livro::factory()->create();
+        $response = $this->delete(route('livros.destroy', $livro->id));
+        $response->assertRedirect(route('login'));
+    }
 }

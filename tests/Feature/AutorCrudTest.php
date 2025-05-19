@@ -88,8 +88,6 @@ class AutorCrudTest extends TestCase
     public function test_usuario_pode_excluir_um_autor(): void
     {
         $autor = Autor::factory()->create();
-
-        // Garante que o autor não possui livros associados
         $autor->livros()->detach();
 
         $response = $this->actingAs($this->user)
@@ -146,8 +144,79 @@ class AutorCrudTest extends TestCase
         $response = $this->actingAs($this->user)
             ->post(route('autores.store'), $dados);
 
-        // Altere este comportamento conforme política do sistema (ex: sanitizar ou bloquear)
         $response->assertSessionDoesntHaveErrors(['nome']);
         $this->assertDatabaseHas('autores', $dados);
+    }
+
+    // ---- TESTES DE SEGURANÇA ----
+
+    public function test_nao_permite_sql_injection_no_nome(): void
+    {
+        $dados = ['nome' => "Autor'); DROP TABLE autores; --"];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('autores.store'), $dados);
+
+        $response->assertRedirect(route('autores.index'));
+        $this->assertDatabaseHas('autores', ['nome' => "Autor'); DROP TABLE autores; --"]);
+    }
+
+    public function test_nao_permite_mass_assignment_em_campos_nao_fillable(): void
+    {
+        $dados = [
+            'id'   => 999,
+            'nome' => 'Mass Assignment',
+            'criado_por' => 888,
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('autores.store'), $dados);
+
+        $response->assertRedirect(route('autores.index'));
+        $this->assertDatabaseHas('autores', ['nome' => 'Mass Assignment']);
+        $this->assertDatabaseMissing('autores', ['id' => 999]);
+    }
+
+    public function test_nao_permite_sobrescrever_timestamps(): void
+    {
+        $dados = [
+            'nome'       => 'Autor Timestamps',
+            'created_at' => now()->addYear(),
+            'updated_at' => now()->addYear(),
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('autores.store'), $dados);
+
+        $response->assertRedirect(route('autores.index'));
+        $this->assertDatabaseHas('autores', ['nome' => 'Autor Timestamps']);
+        $this->assertDatabaseMissing('autores', [
+            'created_at' => now()->addYear()->toDateTimeString()
+        ]);
+    }
+
+    public function test_guest_nao_pode_criar_ou_excluir_autor(): void
+    {
+        $dados = ['nome' => 'Guest Autor'];
+
+        $response = $this->post(route('autores.store'), $dados);
+        $response->assertRedirect(route('login'));
+
+        $autor = Autor::factory()->create();
+        $response = $this->delete(route('autores.destroy', $autor));
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_nao_permite_xss_em_nome(): void
+    {
+        $nomeMalicioso = '<img src=x onerror=alert("xss") />';
+        $dados = ['nome' => $nomeMalicioso];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('autores.store'), $dados);
+
+        $response->assertRedirect(route('autores.index'));
+        $this->assertDatabaseHas('autores', ['nome' => $nomeMalicioso]);
+        // O front deve usar {{ $autor->nome }} para evitar execução
     }
 }

@@ -143,8 +143,79 @@ class AssuntoCrudTest extends TestCase
         $response = $this->actingAs($this->user)
             ->post(route('assuntos.store'), $dados);
 
-        // Ajuste conforme sua política: permitir, sanitizar ou rejeitar
         $response->assertSessionDoesntHaveErrors(['descricao']);
         $this->assertDatabaseHas('assuntos', $dados);
+    }
+
+    // ---- TESTES DE SEGURANÇA ----
+
+    public function test_nao_permite_sql_injection_na_descricao(): void
+    {
+        $dados = ['descricao' => "Assunto'); DROP TABLE assuntos; --"];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('assuntos.store'), $dados);
+
+        $response->assertRedirect(route('assuntos.index'));
+        $this->assertDatabaseHas('assuntos', ['descricao' => "Assunto'); DROP TABLE assuntos; --"]);
+    }
+
+    public function test_nao_permite_mass_assignment_em_campos_nao_fillable(): void
+    {
+        $dados = [
+            'id'        => 888,
+            'descricao' => 'Mass Assignment',
+            'hack'      => 'não deveria salvar',
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('assuntos.store'), $dados);
+
+        $response->assertRedirect(route('assuntos.index'));
+        $this->assertDatabaseHas('assuntos', ['descricao' => 'Mass Assignment']);
+        $this->assertDatabaseMissing('assuntos', ['id' => 888]);
+    }
+
+    public function test_nao_permite_sobrescrever_timestamps(): void
+    {
+        $dados = [
+            'descricao'  => 'Timestamps',
+            'created_at' => now()->addYear(),
+            'updated_at' => now()->addYear(),
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('assuntos.store'), $dados);
+
+        $response->assertRedirect(route('assuntos.index'));
+        $this->assertDatabaseHas('assuntos', ['descricao' => 'Timestamps']);
+        $this->assertDatabaseMissing('assuntos', [
+            'created_at' => now()->addYear()->toDateTimeString()
+        ]);
+    }
+
+    public function test_guest_nao_pode_criar_ou_excluir_assunto(): void
+    {
+        $dados = ['descricao' => 'Guest Teste'];
+
+        $response = $this->post(route('assuntos.store'), $dados);
+        $response->assertRedirect(route('login'));
+
+        $assunto = Assunto::factory()->create();
+        $response = $this->delete(route('assuntos.destroy', $assunto));
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_nao_permite_xss_em_descricao(): void
+    {
+        $descricaoMaliciosa = '<img src=x onerror=alert("xss") />';
+        $dados = ['descricao' => $descricaoMaliciosa];
+
+        $response = $this->actingAs($this->user)
+            ->post(route('assuntos.store'), $dados);
+
+        $response->assertRedirect(route('assuntos.index'));
+        $this->assertDatabaseHas('assuntos', ['descricao' => $descricaoMaliciosa]);
+        // O front deve usar {{ $assunto->descricao }} para evitar execução
     }
 }
