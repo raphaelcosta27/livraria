@@ -42,7 +42,7 @@ O sistema é um cadastro de livros, permitindo o gerenciamento de livros, autore
 * **Frontend:** Blade (Laravel), Tailwind CSS
 * **Banco de Dados:** MySQL (pode ser adaptado)
 * **ORM/Persistência:** Eloquent (Laravel)
-* **Relatórios:** \[Informe qual componente foi utilizado, ex: Laravel Excel, DomPDF, etc.]
+* **Relatórios:** PowerGrid com Export XLS e Chart.js
 * **Testes:** PHPUnit, Laravel Test (TDD — se implementado)
 * **Outros:** PowerGrid, Livewire (opcional)
 
